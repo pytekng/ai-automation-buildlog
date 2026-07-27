@@ -1,0 +1,134 @@
+{
+  "name": "Hello Automation",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "33e48446-0dd3-4b8d-b993-6c8cd199e170",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://hnrss.org/frontpage",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f92db992-fb9f-49e9-9c8c-54188862013c",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "929062ac-1ad7-4418-839d-985af2b8c266",
+              "name": "=title",
+              "value": "{{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "952b1b7d-a8cd-4874-9640-55359bc41c28",
+              "name": "link",
+              "value": "{{ json.link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "3c348255-9f4c-4894-96ca-28fee1cdfaa2",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fromEmail": "praiseworks90@gmail.com",
+        "toEmail": "pyteklimited@gmail.com",
+        "subject": "=New Article: {{ $json.title }}",
+        "emailFormat": "text",
+        "text": "={{ $json.title }}\n{{ $json.link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "fccea6b9-cfc9-4491-8a3d-e64c35454f8b",
+      "name": "Send an Email",
+      "webhookId": "5400d05c-9b7f-4964-aa2e-2a88418f8d5b",
+      "credentials": {
+        "smtp": {
+          "id": "xyQ6TrawPyj8pgi7",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "52e6fa66-e069-4f90-a8b3-34d020312570",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f7633888af097899499aedb16b5b8c1269658206b8bc69d6b55fc97328cdfe48"
+  },
+  "nodeGroups": [],
+  "id": "LBF3SIKJ2SXXR5ol",
+  "tags": []
+}
