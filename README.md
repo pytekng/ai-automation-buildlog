@@ -12,8 +12,8 @@ Public build log for my AI automation journey — no-code/low-code automation wi
 - [x] **Project 1: Hello Automation** — RSS feed → formatted message → email/Slack delivery
   - Trigger → transform (Edit Fields) → deliver (SMTP/Slack)
   - Notable: worked through Gmail OAuth vs SMTP app-password tradeoffs to get delivery working
-  -
-  - [Screenshot] (<a href="https://github.com/user-attachments/assets/e1735a13-ecf3-463e-b5c7-47018391d0dd">  <img width="1366" height="768" alt="Hello Automation Workflow" src="https://github.com/user-attachments/assets/e1735a13-ecf3-463e-b5c7-47018391d0dd" /> </a>)
+  - 
+  - <a href="./workflows/Hello%20Automation.json">  <img width="1366" height="768" alt="Hello Automation Workflow" src="https://github.com/user-attachments/assets/e1735a13-ecf3-463e-b5c7-47018391d0dd" /> </a>
  · [Workflow export](./workflows/Hello%20Automation.json)
 - [ ] **Project 2: Form-to-Sheet Pipeline** — form submission → Google Sheets row → confirmation email
 
