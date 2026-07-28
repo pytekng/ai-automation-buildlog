@@ -24,7 +24,12 @@ Public build log for my AI automation journey — no-code/low-code automation wi
       
 
 ### Phase 1 — Adding AI
-- [ ] **Project 3: AI Email Triage** — incoming emails classified by LLM, routed by category
+
+- [x] **Project 3: AI Email Triage** — incoming emails classified by LLM, routed by category
+  - Learned to reference upstream node data across amulti-step chain
+  - <a href="./workflows/Email%20Triage.json"> <img width="1366" height="768" alt="Screenshot 2026-07-28 115421" src="https://github.com/user-attachments/assets/aebdc2ea-4c8b-4335-ba2e-30ecd7415471" /> </a>
+  - [workflows export](./workflows/Email%20Triage.json)
+    
 - [ ] **Project 4: Content Summarizer Bot** — URL/PDF in → AI summary → saved to Notion/Sheets
 - [ ] **Project 5: AI Social Content Pipeline** — blog post → AI-generated social captions → review sheet
 
