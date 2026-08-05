@@ -31,6 +31,9 @@ Public build log for my AI automation journey — no-code/low-code automation wi
   - [workflows export](./workflows/Email%20Triage.json)
     
 - [ ] **Project 4: Content Summarizer Bot** — URL/PDF in → AI summary → saved to Notion/Sheets
+  - Form - fetch - clean - AI summarize - Save.
+  - <a href="./workflows/<img width="1366" height="726" alt="content summarizer" src="https://github.com/user-attachments/assets/4986d546-250c-4a40-a083-0d25c9c39864" />
+
 - [ ] **Project 5: AI Social Content Pipeline** — blog post → AI-generated social captions → review sheet
 
 ### Phase 2 — Agents & Business Logic
