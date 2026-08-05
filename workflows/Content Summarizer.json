@@ -1,0 +1,212 @@
+{
+  "name": "Content Summarizer",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Content Summarizer",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "=URL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4ff2bf6b-a5b8-423d-9370-55f9eec39634",
+      "name": "On form submission",
+      "webhookId": "2d380436-dea6-4f76-a3b8-3ecae7fed8ef"
+    },
+    {
+      "parameters": {
+        "url": "=https://r.jina.ai/{{ $json.URL }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "0de09369-0471-4ea7-a09d-68bcd9520059",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summarize the following article in 3-4 concise bullet points, capturing only the key facts and ideas. Ignore any navigation text, ads, or \"more for you\" sections.\n\nArticle: {{ $json.data }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        416,
+        0
+      ],
+      "id": "2b952e81-d44f-4a12-883c-9d1b7ced73e0",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        416,
+        160
+      ],
+      "id": "77472b71-556c-4e0b-b4b6-372c6a636878",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "KzBDp8tIGRvy1zF9",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1b-9HrAo1hZuA3GvTo59Fy15fTkKpexRxIg29FY-uc-E",
+          "mode": "list",
+          "cachedResultName": "Content Summarisation ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b-9HrAo1hZuA3GvTo59Fy15fTkKpexRxIg29FY-uc-E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "URL": "={{ $('On form submission').item.json.URL }}",
+            "Summary ": "={{ $json.text }}",
+            "Date": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Summary ",
+              "displayName": "Summary ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        768,
+        0
+      ],
+      "id": "8e44e55a-c51d-4e67-b68d-15241e2acea0",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0cBat6ULym6iRlkf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "fbcf3814-e5c6-4dca-b313-06741f5635ae",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f7633888af097899499aedb16b5b8c1269658206b8bc69d6b55fc97328cdfe48"
+  },
+  "nodeGroups": [],
+  "id": "rjLBKnso1vbtFef1",
+  "tags": []
+}
