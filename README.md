@@ -1,4 +1,4 @@
-# AI Automation Build Log
+<img width="1366" height="726" alt="content summarizer" src="https://github.com/user-attachments/assets/d2a79814-ab19-4db3-86ca-06115d1b49c9" /># AI Automation Build Log
 
 Public build log for my AI automation journey — no-code/low-code automation with n8n, AI APIs, and real business workflows. Updated as each project ships.
 
@@ -36,7 +36,10 @@ Public build log for my AI automation journey — no-code/low-code automation wi
   - [workflows export](./workflows/Content%20Summarizer.json)
     
 ### Phase 2 — Agents & Business Logic
-- [ ] **Project 5: AI Social Content Pipeline** — blog post → AI-generated social captions → review sheet
+- [X] **Project 5: AI Social Content Pipeline** — blog post → AI-generated social captions → review sheet
+  - <a href="./workflows/Social%20Content%20Pipeline.json"> <img width="1357" height="722" alt="Social content pipeline" src="https://github.com/user-attachments/assets/fdab740f-1512-4483-aca3-ae1beaa093c5" /> </a>
+  - [workflows export](./workflows/Social%20Content%20Pipeline.json)
+
 - [ ] **Project 6: AI Customer Support Agent** — RAG chatbot over a knowledge base, escalates to human when unsure
 - [ ] **Project 7: Document Processing Bot** — invoice/receipt → AI extraction → validation → CRM/sheet
 - [ ] **Project 8: Lead Qualification Funnel** — new lead → AI scoring → CRM record → sales notification
