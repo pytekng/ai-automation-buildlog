@@ -1,0 +1,290 @@
+{
+  "name": "Social Content Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Social Content workflow",
+        "formDescription": "Thanks for reaching out to us!",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "URL",
+              "fieldType": "={{ $json.URL }}",
+              "fieldOptions": {
+                "values": [
+                  {}
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        32
+      ],
+      "id": "6369c931-179e-4aee-a71b-adac0f485b1f",
+      "name": "On form submission",
+      "webhookId": "85c7324b-95e4-4af6-93f0-8f19bc5c190b"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional social media content writer.\n\nRead the article below and create social media content from it.\n\nCreate:\n\n1. A short, engaging LinkedIn post.\n2. A short Facebook post.\n3. A short X (Twitter) post.\n4. 5 relevant hashtags.\n\nKeep the content accurate to the article.\nDo not invent facts.\n\nFormat your response exactly like this:\n\nLINKEDIN:\n[LinkedIn post]\n\nFACEBOOK:\n[Facebook post]\n\nX:\n[X post]\n\nHASHTAGS:\n[5 hashtags]\n\nARTICLE:\n{{ $json.data }}",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        416,
+        16
+      ],
+      "id": "b6ea4523-b5f8-4689-8350-9b5dc7abbfbc",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        352,
+        208
+      ],
+      "id": "9b9398eb-12c2-4bc3-be54-0da36df20b81",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "KzBDp8tIGRvy1zF9",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://r.jina.ai/{{ $json.URL }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        16
+      ],
+      "id": "ce5843b7-c498-47c3-8531-d8897e7fa769",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1cb74cfd-9b65-41a8-aba5-f19e32470181",
+              "name": "social_content",
+              "value": "={{ $json.text",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        16
+      ],
+      "id": "8fe7f19d-cea1-44a3-be19-42ab9864b5ac",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1GgNMeOaNcp_iyiXE0qERfuOkj_0Gf5p-mmft2VXcdkU",
+          "mode": "list",
+          "cachedResultName": "Social content Pipeline ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GgNMeOaNcp_iyiXE0qERfuOkj_0Gf5p-mmft2VXcdkU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GgNMeOaNcp_iyiXE0qERfuOkj_0Gf5p-mmft2VXcdkU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Article URL": "={{ $('On form submission').item.json.URL }}",
+            "Social Content": "={{ $json.social_content }}",
+            "Created At": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Article URL",
+              "displayName": "Article URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Social Content",
+              "displayName": "Social Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        16
+      ],
+      "id": "148349d8-ffc8-4d4f-b0af-ddd3696d655d",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0cBat6ULym6iRlkf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "awspraise@gmail.com",
+        "subject": "=New Social Content Generated",
+        "emailType": "text",
+        "message": "=New social media content has been generated.  Article: {{ $('On form submission').item.json.URL }}  --------------------------------  SOCIAL MEDIA CONTENT  {{ $('Edit Fields').item.json.social_content }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1104,
+        16
+      ],
+      "id": "6defe548-cc96-4b56-8cae-7a988ead3a71",
+      "name": "Send a message",
+      "webhookId": "6f53ab3e-5b95-4bdf-864c-a4a161d65ab0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Op1tFAjAqc7XbAg2",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7e36093e-a18c-4f61-9cc7-1d404008ca8d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f7633888af097899499aedb16b5b8c1269658206b8bc69d6b55fc97328cdfe48"
+  },
+  "nodeGroups": [],
+  "id": "nYTDXunaFhrYzFA3",
+  "tags": []
+}
