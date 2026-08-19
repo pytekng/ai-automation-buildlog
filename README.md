@@ -43,6 +43,9 @@ Public build log for my AI automation journey — no-code/low-code automation wi
 - [ ] **Project 6: AI Customer Support Agent** — RAG chatbot over a knowledge base, escalates to human when unsure
 - [ ] **Project 7: Document Processing Bot** — invoice/receipt → AI extraction → validation → CRM/sheet
 - [ ] **Project 8: Lead Qualification Funnel** — new lead → AI scoring → CRM record → sales notification
+  - <a href="./workflows/AI%20Lead%20Qualification.json"> <img width="1366" height="768" alt="Screenshot 2026-08-19 175036" src="https://github.com/user-attachments/assets/4638a773-7447-47ed-ad38-cf8966ec2197" /> </a>
+  - [workflows export](./workfows/AI%20Lead%20Qualification.json)
+
 
 ### Phase 3 — Portfolio-Grade Systems
 - [ ] **Project 9: End-to-End Ops Automation** — full business process automation (recruiting / e-commerce / real estate)
