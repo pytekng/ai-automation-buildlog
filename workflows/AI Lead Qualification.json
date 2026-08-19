@@ -1,0 +1,458 @@
+{
+  "name": "AI Lead Qualification",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "n8nUserAuth",
+        "formTitle": "Lead Check",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "=Name",
+              "fieldName": "Name"
+            },
+            {
+              "fieldLabel": "=Email",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Company"
+            },
+            {
+              "fieldLabel": "=Message",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7008be24-d570-42fd-98cc-3ca26a61f18d",
+      "name": "On form submission",
+      "webhookId": "9f2ed80c-5193-4597-adf5-b38e2190c0c8"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You classify B2B sales leads. Return exactly one lowercase word: hot, warm, or cold.\n\nDefinitions:\n- hot: asks for pricing, a quote, proposal, purchase, consultation, demo, or says they are ready to buy.\n- warm: asks for information, details, capabilities, services, or follow-up before deciding.\n- cold: spam, irrelevant messages, job applications, or messages too vague to show interest.\n\nExamples:\n“I need pricing for your service” → hot\n“Can I get a demo?” → hot\n“I need more information about your post” → warm\n“Tell me what your company does” → warm\n“Hello” → cold\n\nClassify this lead:\n\nName: {{ $json.Name }}\nCompany: {{ $json.Company }}\nMessage: {{ $json.Message }}\n\nReturn only hot, warm, or cold.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "="
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c88217a2-aecf-4e42-9332-2c86cab7bb0e",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        144,
+        208
+      ],
+      "id": "77e1efa9-55b3-4b0d-9b5e-133e45eb1d06",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GvEiYNABFvXhyAwq",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e017397b-c589-472f-a37d-b9f0e7e96b8c",
+              "name": "Priority",
+              "value": "={{ $json.text.trim().toLowerCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        0
+      ],
+      "id": "de6192ce-0bcb-4022-ac2b-3b9b47bdd066",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json[\"Priority \"] }}",
+                    "rightValue": "hot",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "23b169cb-0352-4f6c-a551-32f983f32412"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5cfc8909-20eb-4d8d-99bf-4f26a9a61cf4",
+                    "leftValue": "={{ $json[\"Priority \"] }}",
+                    "rightValue": "warm",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "cf78dea2-ea4b-4947-86c4-3bf0bb36540e",
+                    "leftValue": "={{ $json[\"Priority \"] }}",
+                    "rightValue": "cold",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        976,
+        0
+      ],
+      "id": "3c952ed3-d08f-46b9-8469-544254cd7371",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "sendTo": "praiseworks90@gmail.com",
+        "subject": "=Hot Lead: {{ $('On form submission').item.json.Name }} -- {{ $('On form submission').item.json.Company }}",
+        "message": "=A high-priority lead has arrived.  Name: {{ $('On form submission').item.json.Name }} Email: {{ $('On form submission').item.json.Email }} Company: {{ $('On form submission').item.json.Company }} Priority: {{ $json[\"Priority \"] }}  Message: {{ $('On form submission').item.json.Message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        -112
+      ],
+      "id": "2780d5ef-0e52-4562-8029-c3942912aa23",
+      "name": "Send a message",
+      "webhookId": "68d5ea43-e869-40fe-a487-c69011b304e4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Op1tFAjAqc7XbAg2",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "awspraise@gmail.com",
+        "subject": "=Warm Lead: {{ $('On form submission').item.json.Name }} -- {{ $('On form submission').item.json.Company }}",
+        "message": "=A high-priority lead has arrived.  Name: {{ $('On form submission').item.json.Name }} Email: {{ $('On form submission').item.json.Email }} Company: {{ $('On form submission').item.json.Company }} Priority: {{ $json[\"Priority \"] }}  Message: {{ $('On form submission').item.json.Message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        0
+      ],
+      "id": "1bd32b5b-8eef-4b8e-a115-b48809c4e22e",
+      "name": "Send a message1",
+      "webhookId": "9dc4ae66-d1e4-46e1-a2f0-84abd0aefba5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Op1tFAjAqc7XbAg2",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "blessingokache1@gmail.com",
+        "subject": "=Cold lead: {{ $('On form submission').item.json.Name }} -- {{ $('On form submission').item.json.Company }}",
+        "message": "=A high-priority lead has arrived.  Name: {{ $('On form submission').item.json.Name }} Email: {{ $('On form submission').item.json.Email }} Company: {{ $('On form submission').item.json.Company }} Priority: {{ $json[\"Priority \"] }}  Message: {{ $('On form submission').item.json.Message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        112
+      ],
+      "id": "4c75b3d2-5e9f-4b48-8456-24fa4a3818fb",
+      "name": "Send a message2",
+      "webhookId": "1569e681-298f-4514-a77b-d3511888d0c4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Op1tFAjAqc7XbAg2",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "10Lboe7JtZ_u3any1BawuUJyk-LqNEPSrZUkTawPDsGE",
+          "mode": "list",
+          "cachedResultName": "Lead Database ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10Lboe7JtZ_u3any1BawuUJyk-LqNEPSrZUkTawPDsGE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10Lboe7JtZ_u3any1BawuUJyk-LqNEPSrZUkTawPDsGE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('On form submission').item.json.Name }}",
+            "Email": "={{ $('On form submission').item.json.Email }}",
+            "Company ": "={{ $('On form submission').item.json.Company }}",
+            "Message ": "={{ $('On form submission').item.json.Message }}",
+            "Priority ": "={{ $json.Priority }}",
+            "Created At": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company ",
+              "displayName": "Company ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message ",
+              "displayName": "Message ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority ",
+              "displayName": "Priority ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        768,
+        0
+      ],
+      "id": "f2767d77-4f46-408e-9028-63787265f0b7",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0cBat6ULym6iRlkf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e0f8db3e-c3eb-4d6b-ab16-d2aca1ef526e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f7633888af097899499aedb16b5b8c1269658206b8bc69d6b55fc97328cdfe48"
+  },
+  "nodeGroups": [],
+  "id": "Wftmo4hiUOxs8pex",
+  "tags": []
+}
